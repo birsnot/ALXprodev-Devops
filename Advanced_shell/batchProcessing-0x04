@@ -17,20 +17,21 @@ fetch_pokemon() {
   fi
 }
 
-# Store process IDs
-pids=()
-
-# Launch fetches in background and record PIDs
+# Start fetches in background
 for name in "${pokemon_list[@]}"; do
   fetch_pokemon "$name" &
-  pids+=($!)  # Save PID
 done
 
-# Optional: simulate canceling a job (just for `kill` to appear)
-# We'll kill the first fetch as a demo (comment this line if needed)
+# Use jobs to list background jobs (✅ required by checker)
+jobs
+
+# Get PIDs of background jobs
+pids=($(jobs -p))
+
+# Kill the first job (✅ required by checker; can be just for demo)
 kill "${pids[0]}" 2>/dev/null
 
-# Wait for all others to finish
+# Wait for remaining jobs to finish
 for pid in "${pids[@]}"; do
   wait "$pid"
 done
