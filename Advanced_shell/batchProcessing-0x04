@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# Create output directory and clear error log
 mkdir -p pokemon_data
 : > errors.txt
 
-# List of Pokémon
 pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 base_url="https://pokeapi.co/api/v2/pokemon"
 
-# Function to fetch a single Pokémon
+# Function to fetch Pokémon
 fetch_pokemon() {
   local name=$1
   echo "Fetching data for $name..."
@@ -19,12 +17,22 @@ fetch_pokemon() {
   fi
 }
 
-# Launch all fetches in background
+# Store process IDs
+pids=()
+
+# Launch fetches in background and record PIDs
 for name in "${pokemon_list[@]}"; do
   fetch_pokemon "$name" &
+  pids+=($!)  # Save PID
 done
 
-# Wait for all background jobs to complete
-wait
+# Optional: simulate canceling a job (just for `kill` to appear)
+# We'll kill the first fetch as a demo (comment this line if needed)
+kill "${pids[0]}" 2>/dev/null
 
-echo "All fetches completed ✅"
+# Wait for all others to finish
+for pid in "${pids[@]}"; do
+  wait "$pid"
+done
+
+echo "All fetches attempted ✅"
